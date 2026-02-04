@@ -9,7 +9,8 @@ class ScrapeResponse(BaseModel):
     content: str | None = None
     url: str
     error_code: int | None = None
-    error_message: str 
+    error_message: str | None = None
+    source: str | None = None
 
 
     

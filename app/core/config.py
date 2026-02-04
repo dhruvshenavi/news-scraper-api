@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     # scraping behavior
     MAX_CONTENT_CHARS: int = 50000
     MIN_CONTENT_CHARS: int = 200
-    DEFAULT_LANGUAGE: str | None = None   # None → auto-detect
+    DEFAULT_LANGUAGE: str = "en"    # None → auto-detect
 
     # network
     REQUEST_TIMEOUT: int = 12

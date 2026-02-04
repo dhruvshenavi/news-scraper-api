@@ -1,6 +1,9 @@
 from newspaper import Article, Config
 from app.core.config import settings
 from app.services.scraping.cleaner import clean_text
+from app.services.scraping.source import extract_news_source
+from app.schemas.scrape import ScrapeResponse
+
 
 def scrape_article(url: str) -> dict:
     try:
@@ -20,28 +23,36 @@ def scrape_article(url: str) -> dict:
 
         title = clean_text(article.title)[:300]
         content = clean_text(article.text)
+        source = extract_news_source(url)
+        # source="hello"
 
         if not content or len(content) < settings.MIN_CONTENT_CHARS:
-            return {
-                "title": title or None,
-                "content": None,
-                "url": url,
-                "error": "content_too_short_or_empty"
-            }
+            return ScrapeResponse(
+                title=title or None,
+                content=None,
+                source=source or None,
+                url=url,
+                error_code=400,
+                error_message="content_too_short_or_empty",
+            )
 
         content = content[:settings.MAX_CONTENT_CHARS]
 
-        return {
-            "title": title,
-            "content": content,
-            "url": url,
-            "error": None
-        }
+        return ScrapeResponse(
+            title=title,
+            content=content,
+            source=source,
+            url=url,
+            error_code=None,
+            error_message="",
+        )
 
     except Exception as e:
-        return {
-            "title": None,
-            "content": None,
-            "url": url,
-            "error": "download_or_parse_failed"
-        }
+        return ScrapeResponse(
+            title=None,
+            content=None,
+            source=None,
+            url=url,
+            error_code=500,
+            error_message="download_or_parse_failed: " + str(e),
+        )
